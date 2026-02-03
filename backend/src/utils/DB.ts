@@ -13,10 +13,13 @@ export default class DatabaseManager {
         }
         this.adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL});
         this.prisma = new PrismaClient({ adapter: this.adapter });
-        this.prisma.$connect()
+        this.connect()
     }
 
-
+    async connect() {
+        const res = await this.prisma.$connect();
+        console.log("db connected - ", res);
+    }
     // user
     async getUser({userId}:{userId: string}): Promise<Prisma.UserGetPayload<Record<string, unknown>> | null> {
         const user = await this.prisma.user.findUnique({
