@@ -1,6 +1,6 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Prisma, PrismaClient } from "../../prisma/generated/client";
-import { FilterPosts, NoteFields } from "../types";
+import { FilterPosts, NoteFields } from "../types/types";
 import { NoteCreateInput, UserCreateInput } from "../../prisma/generated/models";
 
 export default class DatabaseManager {

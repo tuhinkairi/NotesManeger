@@ -5,8 +5,10 @@ import cors from "cors";
 import { ENV } from "./config";
 import { routes } from "./routes/routes";
 import { endpointHitLoggerHandler } from "./middleware/logger.middleware";
+import DatabaseManager from "./lib/DB";
 
 export const app = express();
+export const db = new DatabaseManager();
 
 app.use(cors());
 app.use(express.json());
