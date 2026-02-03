@@ -1,7 +1,7 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Prisma, PrismaClient } from "../../prisma/generated/client";
 import { FilterPosts, NoteFields } from "../types/types";
-import { NoteCreateInput, UserCreateInput } from "../../prisma/generated/models";
+import { NoteUncheckedCreateInput, UserCreateInput } from "../../prisma/generated/models";
 
 export default class DatabaseManager {
     private adapter: PrismaPg;
@@ -11,26 +11,26 @@ export default class DatabaseManager {
         if (!process.env.DATABASE_URL) {
             throw new Error("DATABASE_URL is not defined in environment variables.");
         }
-        this.adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL});
+        this.adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
         this.prisma = new PrismaClient({ adapter: this.adapter });
     }
 
     // user
-    async getUser({userId}:{userId: string}): Promise<Prisma.UserGetPayload<Record<string, unknown>> | null> {
+    async getUser({ userId, email }: { userId: string, email?: string }): Promise<Prisma.UserGetPayload<Record<string, unknown>> | null> {
         const user = await this.prisma.user.findUnique({
-            where: { id: userId },
+            where: userId ? { id: userId } : { email: email! }
         });
         return user;
     }
 
-    async createUser(data: UserCreateInput):Promise<Prisma.UserGetPayload<Record<string, unknown>> | null> {
+    async createUser(data: UserCreateInput): Promise<Prisma.UserGetPayload<Record<string, unknown>> | null> {
         const user = await this.prisma.user.create({
             data: data,
         });
         return user;
     }
 
-    async updateUser({userId, data}:{userId: string, data: Partial<UserCreateInput>}):Promise<Prisma.UserGetPayload<Record<string, unknown>> | null> {
+    async updateUser({ userId, data }: { userId: string, data: Partial<UserCreateInput> }): Promise<Prisma.UserGetPayload<Record<string, unknown>> | null> {
         const user = await this.prisma.user.update({
             where: { id: userId },
             data: data,
@@ -38,7 +38,7 @@ export default class DatabaseManager {
         return user;
     }
 
-    async deleteUser({userId}:{userId: string}):Promise<Prisma.UserGetPayload<Record<string, unknown>> | null> {
+    async deleteUser({ userId }: { userId: string }): Promise<Prisma.UserGetPayload<Record<string, unknown>> | null> {
         const user = await this.prisma.user.delete({
             where: { id: userId },
         });
@@ -46,17 +46,17 @@ export default class DatabaseManager {
     }
 
     // posts
-    async createPosts({data}: {data: NoteCreateInput}):Promise<Prisma.NoteGetPayload<Record<string, unknown>> | null> {
+    async createPosts({ data }: { data: NoteUncheckedCreateInput }): Promise<Prisma.NoteGetPayload<Record<string, unknown>> | null> {
         const post = await this.prisma.note.create({
             data: data
         })
         return post;
     }
 
-    async getPosts({orderby, search}:{orderby: FilterPosts, search?: string}):Promise<Prisma.NoteGetPayload<Record<string, unknown>>[]> {
+    async getPosts({ orderby, search, userId }: { orderby?: FilterPosts, search?: string, userId: string }): Promise<Prisma.NoteGetPayload<Record<string, unknown>>[]> {
         let orderBy: Prisma.NoteOrderByWithRelationInput;
-        
-        switch (orderby.filter) {
+
+        switch (orderby?.filter) {
             case "recent":
                 orderBy = { updatedAt: Prisma.SortOrder.desc };
                 break;
@@ -74,27 +74,30 @@ export default class DatabaseManager {
         }
         const posts = await this.prisma.note.findMany({
             where: {
+                userId,
                 ...(search && { title: { contains: search } } || { content: { contains: search } })
             },
             orderBy: {
-                createdAt: orderby.filter === "new" ? "desc" : orderby.filter === "old" ? "asc" : "desc"
+                createdAt: orderby?.filter === "new" ? "desc" : orderby?.filter === "old" ? "asc" : "desc"
             }
         });
 
         return posts;
     }
 
-    async updatePost({postId, data}:{postId: string, data: Partial<NoteFields>}):Promise<Prisma.NoteGetPayload<Record<string, unknown>> | null> {
+    async updatePost({ postId,  data }: { postId: string, data: Partial<NoteFields> }): Promise<Prisma.NoteGetPayload<Record<string, unknown>> | null> {
         const post = await this.prisma.note.update({
-            where: { id: postId },
+            where: {
+                id: postId
+            },
             data: data
         });
         return post;
     }
 
-    async deletePost({postId}: {postId: string}):Promise<Prisma.NoteGetPayload<Record<string, unknown>> | null> {
+    async deletePost({ postId }: { postId: string}): Promise<Prisma.NoteGetPayload<Record<string, unknown>> | null> {
         const post = await this.prisma.note.delete({
-            where: { id: postId },
+            where: { id: postId},
         });
         return post;
     }

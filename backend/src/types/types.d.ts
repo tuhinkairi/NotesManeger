@@ -1,6 +1,6 @@
 // posts
 export interface FilterPosts {
-    filter: "new" | "old" | "recent";
+    filter: "new" | "old" | "recent"| string|  undefined;
 }
 
 export interface NoteFields {
