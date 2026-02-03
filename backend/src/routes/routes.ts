@@ -1,5 +1,5 @@
 import { Router } from "express";
-import DatabaseManager from "../utils/DB";
+import DatabaseManager from "../lib/DB";
 
 export function routes() {
     const router = Router()
@@ -10,12 +10,12 @@ export function routes() {
     });
 
     // User Level
-    router.get("/get-user", async (req, res) => {
+    router.get("/get-user", async (req, res, next) => {
         if (req.body?.userId) {
             const user = await db.getUser({ userId: req.body.userId });
             res.json({ message: "success", data: user });
         } else {
-            throw new Error("userId is required");
+            return next(new Error("userId is required"));
         }
     });
 
