@@ -33,7 +33,7 @@ export async function createUserController(req: Request, res: Response, next: Ne
     const user = await db.createUser({
         email,
         name,
-        password:hashedPassword
+        password: hashedPassword
     });
 
     if (!user) {
@@ -50,4 +50,45 @@ export async function createUserController(req: Request, res: Response, next: Ne
         token,
         data: user
     })
+}
+
+export async function updateUserController(req: Request, res: Response, next: NextFunction) {
+    const { id: userId } = req.user as JwtPayload;
+    const { name, email, password } = req.body;
+   
+    if (!userId) {
+        return next(new AppError("userId is required", 400));
+    }
+
+    const updatedUser = await db.updateUser({
+        userId,
+        data: {
+            name,
+            email,
+            password: password ? await hashPassword(password) : undefined
+        }
+    });
+
+    if (!updatedUser) {
+        return next(new AppError("failed to update user", 500));
+    }
+
+    return res.json({
+        message: "user updated successfully",
+        data: updatedUser
+    });
+}
+
+export async function deleteUserController(req: Request, res: Response, next: NextFunction) {
+    const { id: userId } = req.user as JwtPayload;
+    if (!userId) {
+        return next(new AppError("userId is required", 400));
+    }
+    const deleted = await db.deleteUser({ userId });
+    if (!deleted) {
+        return next(new AppError("failed to delete user", 500));
+    }
+    return res.json({
+        message: "user deleted successfully"
+    });
 }

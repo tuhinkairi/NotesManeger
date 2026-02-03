@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getUserController } from "../controllers/user-controller";
+import { createUserController, getUserController, updateUserController } from "../controllers/user-controller";
 
 export function routes() {
     const router = Router()
@@ -11,8 +11,8 @@ export function routes() {
 
     // User Level
     router.get("/get-user", getUserController);
-
-    router.post("/create-user", getUserController);
+    router.post("/create-user", createUserController);
+    router.put("/update-user", updateUserController);
 
     return router;
 }
