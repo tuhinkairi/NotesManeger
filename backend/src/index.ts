@@ -1,27 +1,39 @@
 import express from "express";
-import { notFoundHandler } from "./middleware/notfound.middleware";
-import { errorHandler } from "./middleware/error.middleware";
-import cors from "cors";
-import { ENV } from "./config";
+import DatabaseManager from "./lib/DB";
+import dotenv from "dotenv";
 import { routes } from "./routes/routes";
 import { endpointHitLoggerHandler } from "./middleware/logger.middleware";
-import DatabaseManager from "./lib/DB";
+import { notFoundHandler } from "./middleware/notfound.middleware";
+import { errorHandler } from "./middleware/error.middleware";
+import { ENV } from "./config";
+import cors from "cors"
+dotenv.config();
 
 export const app = express();
-export const db = new DatabaseManager();
+export let db: DatabaseManager;
 
 app.use(cors());
 app.use(express.json());
 
-app.use(endpointHitLoggerHandler);
+// Initialize database before starting server
+async function startServer() {
+    try {
+        db = new DatabaseManager();
+        await db.prisma.$connect();
+        console.log("Database connected successfully");
 
-app.use("/api", routes());
+        app.use(endpointHitLoggerHandler);
+        app.use("/api", routes());
+        app.use(notFoundHandler);
+        app.use(errorHandler);
 
-app.use(notFoundHandler);
-app.use(errorHandler);
+        app.listen(ENV.PORT, () => {
+            console.log(`Server running on http://localhost:${ENV.PORT}`);
+        });
+    } catch (error) {
+        console.error("Failed to start server:", error);
+        process.exit(1);
+    }
+}
 
-
-
-app.listen(ENV.PORT, () => {
-  console.log(`running on port http://localhost:${ENV.PORT}`);
-});
+startServer();

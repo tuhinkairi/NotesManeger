@@ -1,36 +1,42 @@
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Prisma, PrismaClient } from "../../prisma/generated/client";
 import { FilterPosts, NoteFields } from "../types/types";
-import { NoteUncheckedCreateInput, UserCreateInput } from "../../prisma/generated/models";
+import { Prisma, PrismaClient } from "../generated/prisma/client";
+import { NoteUncheckedCreateInput, NoteUpdateInput, UserCreateInput, UserUpdateInput } from "../generated/prisma/models";
+import { withAccelerate } from "@prisma/extension-accelerate";
+
 
 export default class DatabaseManager {
-    private adapter: PrismaPg;
-    public prisma: PrismaClient;
+    public prisma;
 
     constructor() {
         if (!process.env.DATABASE_URL) {
             throw new Error("DATABASE_URL is not defined in environment variables.");
         }
-        this.adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-        this.prisma = new PrismaClient({ adapter: this.adapter });
+        this.prisma = new PrismaClient({ accelerateUrl: process.env.DATABASE_URL }).$extends(withAccelerate());
+        this.prisma.$connect().then((res)=>{console.log("connected")})
     }
 
     // user
-    async getUser({ userId, email }: { userId: string, email?: string }): Promise<Prisma.UserGetPayload<Record<string, unknown>> | null> {
+    async getUser({ userId, email }: { userId: string, email?: string }){
         const user = await this.prisma.user.findUnique({
             where: userId ? { id: userId } : { email: email! }
         });
         return user;
     }
 
-    async createUser(data: UserCreateInput): Promise<Prisma.UserGetPayload<Record<string, unknown>> | null> {
-        const user = await this.prisma.user.create({
-            data: data,
-        });
-        return user;
+    async createUser(data: UserCreateInput){
+        try{
+            const user = await this.prisma.user.create({
+                data: data,
+            });
+            return user;
+        }
+        catch (err){
+            console.log(err)
+            return null
+        }
     }
 
-    async updateUser({ userId, data }: { userId: string, data: Partial<UserCreateInput> }): Promise<Prisma.UserGetPayload<Record<string, unknown>> | null> {
+    async updateUser({ userId, data }: { userId: string, data: UserUpdateInput }){
         const user = await this.prisma.user.update({
             where: { id: userId },
             data: data,
@@ -38,7 +44,7 @@ export default class DatabaseManager {
         return user;
     }
 
-    async deleteUser({ userId }: { userId: string }): Promise<Prisma.UserGetPayload<Record<string, unknown>> | null> {
+    async deleteUser({ userId }: { userId: string }){
         const user = await this.prisma.user.delete({
             where: { id: userId },
         });
@@ -46,14 +52,14 @@ export default class DatabaseManager {
     }
 
     // posts
-    async createPosts({ data }: { data: NoteUncheckedCreateInput }): Promise<Prisma.NoteGetPayload<Record<string, unknown>> | null> {
+    async createPosts({ data }: { data: NoteUncheckedCreateInput }){
         const post = await this.prisma.note.create({
             data: data
         })
         return post;
     }
 
-    async getPosts({ orderby, search, userId }: { orderby?: FilterPosts, search?: string, userId: string }): Promise<Prisma.NoteGetPayload<Record<string, unknown>>[]> {
+    async getPosts({ orderby, search, userId }: { orderby?: FilterPosts, search?: string, userId: string }) {
         let orderBy: Prisma.NoteOrderByWithRelationInput;
 
         switch (orderby?.filter) {
@@ -85,7 +91,7 @@ export default class DatabaseManager {
         return posts;
     }
 
-    async updatePost({ postId,  data }: { postId: string, data: Partial<NoteFields> }): Promise<Prisma.NoteGetPayload<Record<string, unknown>> | null> {
+    async updatePost({ postId,  data }: { postId: string, data: NoteUpdateInput }){
         const post = await this.prisma.note.update({
             where: {
                 id: postId
@@ -95,7 +101,7 @@ export default class DatabaseManager {
         return post;
     }
 
-    async deletePost({ postId }: { postId: string}): Promise<Prisma.NoteGetPayload<Record<string, unknown>> | null> {
+    async deletePost({ postId }: { postId: string}){
         const post = await this.prisma.note.delete({
             where: { id: postId},
         });
