@@ -781,7 +781,7 @@ SOFTWARE.
 ## 📞 Contact & Support
 
 - **Developer**: [Tuhin Kairi](https://github.com/tuhinkairi)
-- **Portfolio**: [https://theexplorativemind.pythonanywhere.com/](https://theexplorativemind.pythonanywhere.com/)
+- **Portfolio**: [https://tuhinkairi.vercel.app/](https://tuhinkairi.vercel.app/)
 - **Email**: Create an issue on GitHub for support
 
 ---
