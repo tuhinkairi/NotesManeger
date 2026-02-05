@@ -19,9 +19,9 @@ export function routes() {
 
     // Post Level
     router.use("/get-posts", requireAuth, getPostsController);
-    router.use("/create-posts",  createPostController);
-    router.use("/update-posts/:id", requireAuth, updatePostController);
-    router.use("/delete-posts/:id", requireAuth, deletePostController);
+    router.use("/create-posts", requireAuth, createPostController);
+    router.use("/update-posts/:postId", requireAuth, updatePostController); 
+    router.use("/delete-posts/:postId", requireAuth, deletePostController);
 
     return router;
 }

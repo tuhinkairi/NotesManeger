@@ -5,30 +5,40 @@ import { AppError } from "../utils/appError";
 import { FilterPosts } from "../types/types";
 
 export async function getPostsController(req: Request, res: Response, next: NextFunction) {
-    const { id: userId } = req.user as JwtPayload;
-    const { orderby, search } = req.query.filter as { orderby?: FilterPosts; search?: string };
-    if (userId) {
+    try {
+        const { userId } = req.user as JwtPayload;
+
+        if (!userId) {
+            return next(new AppError("User not authenticated", 401));
+        }
+        
+        const filter = req.query.filter as string | undefined;
+        const search = req.query.search as string | undefined;
+
+        const orderby: FilterPosts | undefined = filter ? { filter } as FilterPosts : undefined;
+
         const posts = await db.getPosts({
             orderby,
-            search: search?.toString(),
+            search,
             userId
         });
-        res.json({ message: "success", data: posts });
-    }
-    else {
-        return next(new AppError(`no posts found`));
+
+        return res.json({
+            message: "success", count: posts.length, data: posts
+        });
+    } catch (error) {
+        return next(error);
     }
 }
-
 export async function createPostController(req: Request, res: Response, next: NextFunction) {
-    const { id: userId } = req.user as JwtPayload;
+    const { userId } = req.user as JwtPayload;
     const { title, content } = req.body;
     if (userId) {
         const post = await db.createPosts({
             data: {
                 title,
                 content,
-                userId: userId as string
+               userId
             }
         });
         res.status(201).json({ message: "post created successfully", data: post });
@@ -38,12 +48,13 @@ export async function createPostController(req: Request, res: Response, next: Ne
 }
 
 export async function updatePostController(req: Request, res: Response, next: NextFunction) {
-    const { id: userId } = req.user as JwtPayload;
+    const { userId } = req.user as JwtPayload;
     const { postId } = req.params;
     const { title, content } = req.body;
     if (userId) {
         const post = await db.updatePost({
             postId: postId as string,
+            userId,
             data: {
                 title,
                 content
@@ -53,11 +64,11 @@ export async function updatePostController(req: Request, res: Response, next: Ne
     }
     else {
         return next(new AppError(`no user found with id: ${userId}`));
-    }   
+    }
 }
 
 export async function deletePostController(req: Request, res: Response, next: NextFunction) {
-    const { id: userId } = req.user as JwtPayload;
+    const { userId } = req.user as JwtPayload;
     const { postId } = req.params;
     if (userId) {
         const post = await db.deletePost({
@@ -67,7 +78,7 @@ export async function deletePostController(req: Request, res: Response, next: Ne
     }
     else {
         return next(new AppError(`no user found with id: ${userId}`));
-    }   
+    }
 }
 
 

@@ -7,7 +7,7 @@ import { hashPassword } from "../utils/hashing";
 
 // fetch user
 export async function getUserController(req: Request, res: Response, next: NextFunction) {
-    const { id: userId } = req.user as JwtPayload;
+    const { userId } = req.user as JwtPayload;
     if (userId) {
         const user = await db.getUser({ userId: userId as string });
         res.json({ message: "success", data: user });
@@ -53,7 +53,7 @@ export async function createUserController(req: Request, res: Response, next: Ne
 }
 
 export async function updateUserController(req: Request, res: Response, next: NextFunction) {
-    const { id: userId } = req.user as JwtPayload;
+    const { userId } = req.user as JwtPayload;
     const { name, email, password } = req.body;
    
     if (!userId) {
@@ -80,7 +80,7 @@ export async function updateUserController(req: Request, res: Response, next: Ne
 }
 
 export async function deleteUserController(req: Request, res: Response, next: NextFunction) {
-    const { id: userId } = req.user as JwtPayload;
+    const { userId } = req.user as JwtPayload;
     if (!userId) {
         return next(new AppError("userId is required", 400));
     }
