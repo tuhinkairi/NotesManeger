@@ -7,6 +7,7 @@ import { notFoundHandler } from "./middleware/notfound.middleware";
 import { errorHandler } from "./middleware/error.middleware";
 import { ENV } from "./config";
 import cors from "cors"
+import { rateLimiter } from "./middleware/limiter.middleware";
 dotenv.config();
 
 export const app = express();
@@ -14,6 +15,7 @@ export let db: DatabaseManager;
 
 app.use(cors());
 app.use(express.json());
+app.use(rateLimiter);
 
 // Initialize database before starting server
 async function startServer() {
@@ -21,7 +23,7 @@ async function startServer() {
         db = new DatabaseManager();
         await db.prisma.$connect();
         console.log("Database connected successfully");
-
+        
         app.use(endpointHitLoggerHandler);
         app.use("/api", routes());
         app.use(notFoundHandler);
