@@ -3,6 +3,7 @@ import { Prisma, PrismaClient } from "../generated/prisma/client";
 import { NoteCreateInput, NoteUncheckedCreateInput, NoteUpdateInput, UserCreateInput, UserUpdateInput } from "../generated/prisma/models";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { AppError } from "../utils/appError";
+import { contentValidator } from "../utils/content-validatior";
 
 
 export default class DatabaseManager {
@@ -32,7 +33,7 @@ export default class DatabaseManager {
             throw new AppError("email already registered", 400)
         }
         const user = await this.prisma.user.create({
-            data: data,
+            data: contentValidator(data),
         });
         return user;
     }
@@ -40,7 +41,7 @@ export default class DatabaseManager {
     async updateUser({ userId, data }: { userId: string, data: UserUpdateInput }) {
         const user = await this.prisma.user.update({
             where: { id: userId },
-            data: data,
+            data: contentValidator(data),
         });
         return user;
     }
@@ -55,7 +56,7 @@ export default class DatabaseManager {
     // posts
     async createPosts({ data }: { data: NoteUncheckedCreateInput }) {
         const post = await this.prisma.note.create({
-            data: data
+            data: contentValidator(data)
         })
         return post;
     }
@@ -101,7 +102,7 @@ export default class DatabaseManager {
                 id: postId,
                 userId
             },
-            data: data
+            data: contentValidator(data)
         });
         return post;
     }
