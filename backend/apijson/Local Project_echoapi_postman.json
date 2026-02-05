@@ -1,0 +1,876 @@
+{
+	"info": {
+		"name": "New Collection",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "NoteManeger",
+			"description": "",
+			"sort": 13,
+			"item": [
+				{
+					"name": "Health Check",
+					"description": "",
+					"sort": 2,
+					"item": [
+						{
+							"name": "Health Check",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/health",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/health"
+									]
+								}
+							},
+							"sort": 3
+						}
+					]
+				},
+				{
+					"name": "Users",
+					"description": "",
+					"sort": 4,
+					"item": [
+						{
+							"name": "Create User (Register)",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/create-user",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/create-user"
+									]
+								},
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"John Doe\",\n\t\"email\": \"john.doe1@example.com\",\n\t\"password\": \"securePassword123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"packages": {},
+										"exec": [
+											"if (pm.response.code === 201) {",
+											"    const response = pm.response.json();",
+											"    pm.environment.set('authToken', response.token);",
+											"    if (response.data && response.data.id) {",
+											"        pm.environment.set('userId', response.data.id);",
+											"    }",
+											"}"
+										]
+									}
+								}
+							],
+							"sort": 5
+						},
+						{
+							"name": "Get User",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/get-user",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/get-user"
+									]
+								}
+							},
+							"sort": 6
+						},
+						{
+							"name": "Update User",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/update-user",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/update-user"
+									]
+								},
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"John Updated\",\n\t\"email\": \"john.updated@example.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"sort": 7
+						},
+						{
+							"name": "Update User Password",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/update-user",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/update-user"
+									]
+								},
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"password\": \"newSecurePassword123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"sort": 8
+						},
+						{
+							"name": "Delete User",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/delete-user",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/delete-user"
+									]
+								}
+							},
+							"sort": 9
+						}
+					]
+				},
+				{
+					"name": "Posts",
+					"description": "",
+					"sort": 10,
+					"item": [
+						{
+							"name": "Get All Posts",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/get-posts/daff6376-f3b5-4826-9ae5-00163f14c958",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/get-posts/daff6376-f3b5-4826-9ae5-00163f14c958"
+									]
+								}
+							},
+							"sort": 11
+						},
+						{
+							"name": "Get Posts - Filter by Recent",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/get-posts?filter=recent",
+									"query": [
+										{
+											"key": "filter",
+											"value": "recent",
+											"description": "",
+											"disabled": false
+										}
+									],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/get-posts?filter=recent"
+									]
+								}
+							},
+							"sort": 12
+						},
+						{
+							"name": "Get Posts - Filter by New",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/get-posts?filter=new",
+									"query": [
+										{
+											"key": "filter",
+											"value": "new",
+											"description": "",
+											"disabled": false
+										}
+									],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/get-posts?filter=new"
+									]
+								}
+							},
+							"sort": 13
+						},
+						{
+							"name": "Get Posts - Filter by Old",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/get-posts?filter=old",
+									"query": [
+										{
+											"key": "filter",
+											"value": "old",
+											"description": "",
+											"disabled": false
+										}
+									],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/get-posts?filter=old"
+									]
+								}
+							},
+							"sort": 14
+						},
+						{
+							"name": "Get Posts - Search by Title/Content",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/get-posts?search=test",
+									"query": [
+										{
+											"key": "search",
+											"value": "test",
+											"description": "",
+											"disabled": false
+										}
+									],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/get-posts?search=test"
+									]
+								}
+							},
+							"sort": 15
+						},
+						{
+							"name": "Create Post",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/create-posts",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/create-posts"
+									]
+								},
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4YjEwMTg1Ni0wNzMwLTRkYmUtOWRmMS00OGMyZDBhNmFiYjEiLCJlbWFpbCI6ImpvaG4uZG9lMUBleGFtcGxlLmNvbSIsImlhdCI6MTc3MDI3NDg2NiwiZXhwIjoxNzcwODc5NjY2fQ.fv9rMunTA8Jb2O79q4wa_JkPwINTYWZBlbyzhoqOEsI",
+											"type": "string"
+										}
+									]
+								},
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"title\": \"new\",\n\t\"content\": \"no change \"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"packages": {},
+										"exec": [
+											"if (pm.response.code === 201) {",
+											"    const response = pm.response.json();",
+											"    if (response.data && response.data.id) {",
+											"        pm.environment.set('postId', response.data.id);",
+											"    }",
+											"}"
+										]
+									}
+								}
+							],
+							"sort": 16
+						},
+						{
+							"name": "Update Post",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/update-posts/daff6376-f3b5-4826-9ae5-00163f14c958",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/update-posts/daff6376-f3b5-4826-9ae5-00163f14c958"
+									]
+								},
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"title\": \"Updated Note Title\",\n\t\"content\": \"This is the updated content of my note.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"sort": 17
+						},
+						{
+							"name": "Update Post - Title Only",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/update-posts/{{postId}}",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/update-posts/{{postId}}"
+									]
+								},
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"content\": \"testing\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"sort": 18
+						},
+						{
+							"name": "Delete Post",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/delete-posts/{{postId}}",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/delete-posts/{{postId}}"
+									]
+								}
+							},
+							"sort": 19
+						}
+					]
+				},
+				{
+					"name": "Error Cases",
+					"description": "",
+					"sort": 20,
+					"item": [
+						{
+							"name": "Create User - Missing Email",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/create-user",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/create-user"
+									]
+								},
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"Test User\",\n\t\"password\": \"password123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"sort": 21
+						},
+						{
+							"name": "Create User - Missing Name",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/create-user",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/create-user"
+									]
+								},
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"test@example.com\",\n\t\"password\": \"password123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"sort": 22
+						},
+						{
+							"name": "Create User - Missing Password",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/create-user",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/create-user"
+									]
+								},
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"Test User\",\n\t\"email\": \"test@example.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"sort": 23
+						},
+						{
+							"name": "Create User - Duplicate Email",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/create-user",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/create-user"
+									]
+								},
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\": \"John Doe\",\n\t\"email\": \"john.doe@example.com\",\n\t\"password\": \"securePassword123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"sort": 24
+						},
+						{
+							"name": "Get User - No Auth Token",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/get-user",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/get-user"
+									]
+								}
+							},
+							"sort": 25
+						},
+						{
+							"name": "Get User - Invalid Token",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer invalid-token-123",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/get-user",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/get-user"
+									]
+								}
+							},
+							"sort": 26
+						},
+						{
+							"name": "Get Posts - No Auth Token",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/get-posts",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/get-posts"
+									]
+								}
+							},
+							"sort": 27
+						},
+						{
+							"name": "Update Post - Invalid Post ID",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/update-posts/invalid-uuid-123",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/update-posts/invalid-uuid-123"
+									]
+								},
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"title\": \"Updated Title\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"sort": 28
+						},
+						{
+							"name": "Delete Post - Nonexistent ID",
+							"description": "",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"disabled": false,
+										"description": ""
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/delete-posts/00000000-0000-0000-0000-000000000000",
+									"query": [],
+									"variable": [],
+									"host": [
+										"{{baseUrl}}/delete-posts/00000000-0000-0000-0000-000000000000"
+									]
+								}
+							},
+							"sort": 29
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [],
+	"event": [],
+	"auth": {}
+}
