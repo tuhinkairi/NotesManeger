@@ -12,43 +12,21 @@ export class IoProvider {
         });
     }
 
-    private reciveClient(socket:Socket) {
-        socket.on("server:message", (message:{message:string}) => {
-            // recive content from client
+    async reciveClient(socket:Socket, func: (message:string)=>void) {
+        socket.on("server:message", (message) => {
+            // Client → Server:
+            const payload = JSON.parse(message)
             console.log("Client → Server:", message);
+            func(payload?.message)
         })
     }
-    private sendClient(socket:Socket) {
-        socket.on("client:message", (message : { message: string }) => {
-            // recive content from client
+    async sendClient(socket:Socket, message:string) {
+        socket.emit("client:message", () => {
+            // Server -> Client:
             console.log("Server -> Client:", message); 
         })
     }
-    private reciveRedis(socket:Socket) {
-        socket.on("server:redis-message", ( message : { message: string }) => {
-            // recive content from client
-            console.log("redis → Server:", message);
-        })
-    }
-    private sendRedis(socket:Socket) {
-        socket.on("redis:redis-message", ( message : { message: string }) => {
-            // recive content from client
-            console.log("Server -> Redis:", message);
-        })
-    }
 
-
-    public listener() {
-        this._io.on("connection", (socket) => {
-            console.log("User connected:", socket.id);
-
-            this.sendClient(socket)
-            this.reciveClient(socket)
-            this.sendRedis(socket)
-            this.reciveRedis(socket)
-            
-        });
-    }
 
     get io() {
         return this._io;
