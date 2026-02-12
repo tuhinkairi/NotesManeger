@@ -10,6 +10,7 @@ export function ServerController() {
     redisSub.client.connect().then((res)=>{
         console.log(res)
     }).catch(err=>console.log(err))
+    
     redisPub.client.connect().then((res)=>{
         console.log(res)
     }).catch(err=>console.log(err))
@@ -21,7 +22,7 @@ export function ServerController() {
         redisSub.subscribeContent({
             channel: RedisChannels.Notes,
             func(message) {
-                console.log(message)
+                console.log("sub",message)
                 SocketIo.sendClient(socket, message)
             },
         })

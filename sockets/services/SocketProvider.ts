@@ -21,10 +21,8 @@ export class IoProvider {
         })
     }
     async sendClient(socket:Socket, message:string) {
-        socket.emit("client:message", () => {
-            // Server -> Client:
-            console.log("Server -> Client:", message); 
-        })
+        console.log("Server -> Client:", message); 
+        socket.emit("client:message", {message:message})
     }
 
 
