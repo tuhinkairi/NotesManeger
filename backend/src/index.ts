@@ -7,10 +7,13 @@ import { notFoundHandler } from "./middleware/notfound.middleware";
 import { errorHandler } from "./middleware/error.middleware";
 import { ENV } from "./config";
 import cors from "cors"
+import http from "http"
 import { rateLimiter } from "./middleware/limiter.middleware";
+import { ServerController } from "./io/lib/ServerControler";
 dotenv.config();
 
 export const app = express();
+export const httpServer = http.createServer(app);
 export let db: DatabaseManager;
 
 app.use(cors());
@@ -28,8 +31,8 @@ async function startServer() {
         app.use("/api", routes());
         app.use(notFoundHandler);
         app.use(errorHandler);
-
-        app.listen(ENV.PORT, () => {
+        ServerController()
+        httpServer.listen(ENV.PORT, () => {
             console.log(`Server running on http://localhost:${ENV.PORT}`);
         });
     } catch (error) {
