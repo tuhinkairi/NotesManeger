@@ -41,8 +41,6 @@ export function ServerController() {
     function registerSocketEvents() {
         socketProvider.io.on("connection", (socket) => {
             console.log("User connected:", socket.id)
-
-            // ✅ Client joins a specific note room
             socket.on("join:note", (noteId: string) => {
                 socket.join(noteId)
                 console.log(`Socket ${socket.id} joined note ${noteId}`)
@@ -52,7 +50,6 @@ export function ServerController() {
                 socket.leave(noteId)
                 console.log(`Socket ${socket.id} left note ${noteId}`)
             })
-
             socketProvider.reciveClient(socket, (message) => {
                 const { noteId, content } = message
 

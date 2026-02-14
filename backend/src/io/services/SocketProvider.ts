@@ -4,13 +4,12 @@ import { Server as HttpServer } from "http";
 
 
 export class IoProvider {
-    private _io: Server;
+    private _io;
 
     constructor(httpServer: HttpServer) {
         this._io = new Server(httpServer, {
-            path:"/realtime",
             cors: {
-                origin: "*",
+                origin: "http://localhost:5173",
             },
         });
     }
