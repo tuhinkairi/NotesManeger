@@ -7,14 +7,51 @@ import { hashPassword } from "../utils/hashing";
 
 // fetch user
 export async function getUserController(req: Request, res: Response, next: NextFunction) {
-    const { userId } = req.user as JwtPayload;
+    const { userId, email } = req.user as JwtPayload;
     if (userId) {
-        const user = await db.getUser({ userId: userId as string });
+        const user = await db.getUser({ userId: userId as string, email:email as string});
         res.json({ message: "success", data: user });
     } else {
         return next(new Error(`no user found with id: ${userId}`));
     }
 }
+
+export async function loginUserController(req: Request, res: Response, next: NextFunction) {
+    if (!req.body) {
+        return next(new AppError("email & password are required", 400));
+    }
+    const { email, password } = req.body;
+
+    if (!email) {
+        return next(new AppError("email are required", 400));
+    }
+
+    if (!password) {
+        return next(new AppError("password is required", 400));
+    }
+
+
+    const user = await db.loginUser({
+        email,
+        password: password
+    });
+
+    if (!user) {
+        return next(new AppError("failed to login user", 500));
+    }
+
+    const token = signToken({
+        userId: user.id,
+        email: user.email
+    });
+
+    return res.status(200).json({
+        message: "user login successfully",
+        token,
+        data: user
+    })
+}
+
 
 // create user
 export async function createUserController(req: Request, res: Response, next: NextFunction) {

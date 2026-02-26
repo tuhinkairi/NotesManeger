@@ -16,7 +16,9 @@ export const app = express();
 export const httpServer = http.createServer(app);
 export let db: DatabaseManager;
 
-app.use(cors());
+app.use(cors({
+    origin:"http://localhost:5173"
+}));
 app.use(express.json());
 app.use(rateLimiter);
 

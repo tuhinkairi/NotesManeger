@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { createUserController, deleteUserController, getUserController, updateUserController } from "../controllers/user-controller";
+import { createUserController, deleteUserController, getUserController, loginUserController, updateUserController } from "../controllers/user-controller";
 import { requireAuth } from "../middleware/auth.middleware";
 import { createPostController, deletePostController, getPostsController, updatePostController } from "../controllers/post-controller";
 import { noteCreateRateLimiter } from "../middleware/limiter.middleware";
@@ -17,7 +17,8 @@ export function routes() {
 
     // User Level
     router.get("/get-user", middlewares.auth, getUserController);
-    router.post("/create-user", createUserController);
+    router.post("/register", createUserController);
+    router.post("/login", loginUserController);
     router.put("/update-user", middlewares.auth, updateUserController);
     router.delete("/delete-user", middlewares.auth, deleteUserController);
 

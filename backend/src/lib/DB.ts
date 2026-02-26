@@ -1,9 +1,10 @@
-import { FilterPosts, NoteFields } from "../types/types";
-import { Prisma, PrismaClient } from "../generated/prisma/client";
-import { NoteCreateInput, NoteUncheckedCreateInput, NoteUpdateInput, UserCreateInput, UserUpdateInput } from "../generated/prisma/models";
+import { FilterPosts } from "../types/types";
+import { PrismaClient } from "../generated/prisma/client";
+import { NoteUncheckedCreateInput, NoteUpdateInput, RoomsCreateInput, UserCreateInput, UserUpdateInput } from "../generated/prisma/models";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { AppError } from "../utils/appError";
 import { contentValidator } from "../utils/content-validatior";
+import { comparePassword } from "../utils/hashing";
 
 
 export default class DatabaseManager {
@@ -22,6 +23,24 @@ export default class DatabaseManager {
         const user = await this.prisma.user.findUnique({
             where: userId ? { id: userId } : { email: email }
         });
+        return user;
+    }
+
+    async loginUser({ email, password }: { password: string, email: string }) {
+        const user = await this.prisma.user.findUnique({
+            where: { email: email }
+        });
+
+        if (!user) {
+            throw new AppError("User not found!", 404);
+        }
+
+        const isPasswordValid = await comparePassword(password, user.password);
+
+        if (!isPasswordValid) {
+            throw new AppError("Wrong password!", 401);
+        }
+
         return user;
     }
 
@@ -47,10 +66,17 @@ export default class DatabaseManager {
     }
 
     async deleteUser({ userId }: { userId: string }) {
-        const user = await this.prisma.user.delete({
-            where: { id: userId },
+        return await this.prisma.$transaction(async (tx) => {
+            await tx.note.deleteMany({
+                where: { userId },
+            });
+
+            const user = await tx.user.delete({
+                where: { id: userId },
+            });
+
+            return user;
         });
-        return user;
     }
 
     // posts
@@ -96,7 +122,7 @@ export default class DatabaseManager {
         return posts;
     }
 
-    async updatePost({ postId, userId, data }: { postId: string,userId: string, data: NoteUpdateInput }) {
+    async updatePost({ postId, userId, data }: { postId: string, userId: string, data: NoteUpdateInput }) {
         const post = await this.prisma.note.update({
             where: {
                 id: postId,
@@ -112,6 +138,16 @@ export default class DatabaseManager {
             where: { id: postId },
         });
         return post;
+    }
+
+    // rooms
+    async CreateRoom({ payload }: { payload: RoomsCreateInput }) {
+        const room = await this.prisma.room.create(payload)
+        return room
+    }
+    async getRoom({ payload }: { payload: RoomsCreateInput }) {
+        const room = await this.prisma.room.create(payload)
+        return room
     }
 
     async disconnect() {

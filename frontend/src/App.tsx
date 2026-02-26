@@ -1,10 +1,13 @@
-import RoutingControl from './ui/RoutingControl'
+import React from 'react'
+import { BrowserRouter } from 'react-router-dom'
+import RoutingController from './Routing'
 
 export default function App() {
-  return (
-    <main className='min-h-screen text-lg'>
-      
-      <RoutingControl />
-    </main>
-  )
+    return (
+        <div>
+            <BrowserRouter>
+                <RoutingController />
+            </BrowserRouter>
+        </div>
+    )
 }
